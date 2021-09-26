@@ -27,6 +27,30 @@ namespace WindowsServiceTe
                     case "--uninstall":
                         ManagedInstallerClass.InstallHelper(new string[] { "/u", Assembly.GetExecutingAssembly().Location });
                         break;
+                    default:
+                        ServiceController sc = new ServiceController();
+                        sc.ServiceName = "WindowsServiceTe";
+                        if (sc.Status == ServiceControllerStatus.Stopped)
+                        {
+                            // Start the service if the current status is stopped.
+
+                            Console.WriteLine("Starting the service...");
+                            try
+                            {
+                                // Start the service, and wait until its status is "Running".
+                                sc.Start();
+                                sc.WaitForStatus(ServiceControllerStatus.Running);
+
+                                // Display the current service status.
+                                Console.WriteLine("The service status is now set to {0}.",
+                                                   sc.Status.ToString());
+                            }
+                            catch (InvalidOperationException)
+                            {
+                                Console.WriteLine("Could not start the service.");
+                            }
+                        }
+                        break;
                 }
             }
             else
